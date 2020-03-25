@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class BudgetCard extends StatelessWidget {
   void _clicaBotaoGenerico() {
@@ -15,6 +14,7 @@ class BudgetCard extends StatelessWidget {
         onTap: _clicaBotaoGenerico,
         child: Container(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
                 children: <Widget>[
@@ -30,7 +30,9 @@ class BudgetCard extends StatelessWidget {
                 ],
               ),
               Row(
-                children: <Widget>[Text("Teste")],
+                children: <Widget>[
+                  CircularProgressIndicator(value: 0.24)
+                ],
               )
             ],
           ),
