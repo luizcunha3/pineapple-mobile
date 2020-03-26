@@ -17,12 +17,13 @@ class BudgetCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Icon(
                     Icons.shopping_cart,
                     size: 80,
                   ),
-                  SizedBox(width: 20),
+//                  SizedBox(width: 20),
                   Text("Compras",
                       style: DefaultTextStyle.of(context)
                           .style
@@ -30,6 +31,7 @@ class BudgetCard extends StatelessWidget {
                 ],
               ),
               Row(
+                
                 children: <Widget>[
                   CircularProgressIndicator(value: 0.24)
                 ],
