@@ -1,65 +1,82 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'add_expense_button.dart';
-import 'budget_card.dart';
-import 'AddExpense/add_expense.dart';
+import 'package:pineapple_flutter/components/budget_card.dart';
+import 'package:pineapple_flutter/components/expense_list.dart';
+import 'package:pineapple_flutter/components/input_form.dart';
+import 'package:pineapple_flutter/controllers/transaction_controller.dart';
+import 'package:pineapple_flutter/models/transaction.dart';
 
+main() => runApp(ExpensesApp());
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class ExpensesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      home: TestApp(),
       theme: ThemeData(
-        primarySwatch: Colors.yellow,
-        accentColor: Colors.teal
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
       ),
-      home: MyHomePage(title: 'Pineapple'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
+class TestApp extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _TestAppState createState() => _TestAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _TestAppState extends State<TestApp> {
+  List<PineapleTransaction> transactions = null;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  Widget widgetBeingTested() {
+    if (transactions == null) {
+      return Center(child: Text('Carregando'));
+    } else {
+      return ExpenseList(
+        transactions: transactions,
+      );
+    }
   }
 
-  void _addNewExpense() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense()));
+  _getTransactions() {
+    TransactionController.getTransactions().then((value) => {
+          setState(() {
+            transactions = value;
+          })
+        });
+  }
+
+  _openExpenseInput(BuildContext context) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+              child: Container(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: ExpenseInput(),
+          ));
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    _getTransactions();
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title, style: TextStyle(color: Colors.teal),),
+        title: Text('Teste'),
       ),
-      body: GridView.count(
-
-        crossAxisCount: 2,
-        children: List.generate(4, (index) {
-          return BudgetCard();
-        }),
+      body: Container(
+        child: widgetBeingTested(),
       ),
-      floatingActionButton: AddExpenseButton(
-        onPressed: _addNewExpense,
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          _openExpenseInput(context);
+        },
+      ),
     );
   }
 }

@@ -10,7 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: 0.17.3
-
+  
+  intl: ^0.16.1
+  firebase_core: ^0.4.4+3
+  cloud_firestore: ^0.13.4+2
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
