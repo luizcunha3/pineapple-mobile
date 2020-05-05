@@ -1,79 +1,82 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'add_expense_button.dart';
-import 'budget_card.dart';
+import 'package:pineapple_flutter/components/budget_card.dart';
+import 'package:pineapple_flutter/components/expense_list.dart';
+import 'package:pineapple_flutter/components/input_form.dart';
+import 'package:pineapple_flutter/controllers/transaction_controller.dart';
+import 'package:pineapple_flutter/models/transaction.dart';
 
-void main() => runApp(MyApp());
+main() => runApp(ExpensesApp());
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class ExpensesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      home: TestApp(),
       theme: ThemeData(
-        primarySwatch: Colors.yellow,
-        accentColor: Colors.teal
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
       ),
-      home: MyHomePage(title: 'Pineapple'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class TestApp extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _TestAppState createState() => _TestAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _TestAppState extends State<TestApp> {
+  List<PineapleTransaction> transactions = null;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Widget widgetBeingTested() {
+    if (transactions == null) {
+      return Center(child: Text('Carregando'));
+    } else {
+      return ExpenseList(
+        transactions: transactions,
+      );
+    }
+  }
+
+  _getTransactions() {
+    TransactionController.getTransactions().then((value) => {
+          setState(() {
+            transactions = value;
+          })
+        });
+  }
+
+  _openExpenseInput(BuildContext context) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+              child: Container(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: ExpenseInput(),
+          ));
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    _getTransactions();
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Teste'),
       ),
-      body: GridView.count(
-        crossAxisCount: 1,
-        children: List.generate(40, (index) {
-          return BudgetCard();
-        }),
+      body: Container(
+        child: widgetBeingTested(),
       ),
-      floatingActionButton: AddExpenseButton(
-        onPressed: _incrementCounter,
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          _openExpenseInput(context);
+        },
+      ),
     );
   }
 }
